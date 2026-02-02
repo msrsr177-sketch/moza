@@ -1,8 +1,10 @@
+name: Universal Auto Deploy (Web & APK)
 
-Name: Universal Auto Deploy (Web & APK)
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
 permissions:
   contents: write
   pages: write
@@ -11,50 +13,56 @@ permissions:
 jobs:
   build-process:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
+    steps:
+      # 0. جلب المشروع
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 1. إعداد Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 1. معالجة الملفات (سواء كانت ZIP أو ملفات عادية)
+      # 2. استخراج الملفات إذا كانت ZIP
       - name: Extract & Organize Files
         run: |
           if ls *.zip 1> /dev/null 2>&1; then
-            unzip -o *.zip -d ./temp_extracted
-            ROOT_DIR=$(find ./temp_extracted -name "package.json" -exec dirname {} \;)
-            cp -r $ROOT_DIR/. ./
+            unzip -o *.zip -d temp_extracted
+            ROOT_DIR=$(find temp_extracted -name "package.json" -exec dirname {} \; | head -n 1)
+            cp -r "$ROOT_DIR"/. .
             rm -rf temp_extracted
           fi
 
-      # 2. بناء الويب
+      # 3. بناء الويب
       - name: Build Web
         run: |
           npm install --legacy-peer-deps
           npm run build || true
 
-      # 3. بناء الأندرويد (تلقائي بالكامل)
-      - name: Build Android
+      # 4. بناء تطبيق الأندرويد (APK)
+      - name: Build Android APK
         run: |
-          # إذا المجلد مو موجود، السيرفر يسويه من الصفر
           if [ ! -d "android" ]; then
             npm install @capacitor/android
             npx cap add android
           fi
-          npx cap sync android
-          cd android && chmod +x gradlew && ./gradlew assembleDebug
 
-      # 4. رفع الـ APK للتحميل
-      - name: Upload APK
+          npx cap sync android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      # 5. رفع ملف APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: App-Ready-To-Install
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      # 5. تحديث رابط الويب (GitHub Pages)
-      - name: Deploy Web
+      # 6. نشر الموقع على GitHub Pages
+      - name: Deploy Web to GitHub Pages
         uses: actions/deploy-pages@v4
         with:
-          artifact_name: github-pages # هذا يضمن تحديث الرابط فوراً
+          artifact_name: github-pages
