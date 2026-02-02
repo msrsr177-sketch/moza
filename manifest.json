@@ -1,0 +1,23 @@
+
+{
+  "short_name": "موزة",
+  "name": "موزة - بوتيك رقمي حصري",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&q=80&w=192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&q=80&w=512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#fcfbf7",
+  "background_color": "#fcfbf7",
+  "dir": "rtl",
+  "lang": "ar"
+}

@@ -1,0 +1,10 @@
+
+{
+  "appId": "com.example.moza",
+  "appName": "موزة",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

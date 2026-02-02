@@ -1,0 +1,12 @@
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#FCFBF7</item>
+        <item name="colorPrimaryDark">#FCFBF7</item>
+        <item name="colorAccent">#B45309</item>
+        <item name="android:windowBackground">#FCFBF7</item>
+    </style>
+
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+</resources>

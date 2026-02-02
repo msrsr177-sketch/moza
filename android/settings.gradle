@@ -1,0 +1,11 @@
+include ':app'
+
+project(':app').projectDir = new File(settingsDir, 'app')
+
+def capacitorProjects = [
+    ':capacitor-android',
+    ':capacitor-push-notifications'
+]
+
+// هذه المنطقة يتم تحديثها تلقائياً بواسطة npx cap sync
+// ولكن نضع الأساس لضمان العمل اليدوي الأول
