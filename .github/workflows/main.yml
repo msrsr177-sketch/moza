@@ -1,4 +1,4 @@
-cat << 'EOF' > .github/workflows/main.yml
+
 Name: Universal Auto Deploy (Web & APK)
 on:
   push:
@@ -59,3 +59,4 @@ jobs:
         with:
           artifact_name: github-pages # هذا يضمن تحديث الرابط فوراً
 EOF
+
