@@ -1,0 +1,61 @@
+cat << 'EOF' > .github/workflows/main.yml
+Name: Universal Auto Deploy (Web & APK)
+on:
+  push:
+    branches: [ main ]
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 1. معالجة الملفات (سواء كانت ZIP أو ملفات عادية)
+      - name: Extract & Organize Files
+        run: |
+          if ls *.zip 1> /dev/null 2>&1; then
+            unzip -o *.zip -d ./temp_extracted
+            ROOT_DIR=$(find ./temp_extracted -name "package.json" -exec dirname {} \;)
+            cp -r $ROOT_DIR/. ./
+            rm -rf temp_extracted
+          fi
+
+      # 2. بناء الويب
+      - name: Build Web
+        run: |
+          npm install --legacy-peer-deps
+          npm run build || true
+
+      # 3. بناء الأندرويد (تلقائي بالكامل)
+      - name: Build Android
+        run: |
+          # إذا المجلد مو موجود، السيرفر يسويه من الصفر
+          if [ ! -d "android" ]; then
+            npm install @capacitor/android
+            npx cap add android
+          fi
+          npx cap sync android
+          cd android && chmod +x gradlew && ./gradlew assembleDebug
+
+      # 4. رفع الـ APK للتحميل
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Ready-To-Install
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      # 5. تحديث رابط الويب (GitHub Pages)
+      - name: Deploy Web
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages # هذا يضمن تحديث الرابط فوراً
+EOF
